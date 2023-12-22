@@ -49,7 +49,8 @@ namespace QR {
         return {current_gp.begin(), current_gp.begin() + err_cor_info.ecc_per_block_};
     }
 
-    std::vector<int> ECCGenerator::generateFinalMessage() {
+    std::string ECCGenerator::generateFinalMessage() {
+        std::string binary_message;
         std::vector<int> result;
         std::vector<std::vector<int>> messages_in_blocks;
         std::vector<std::vector<int>> errors_in_blocks;
@@ -71,7 +72,15 @@ namespace QR {
                 result.push_back(errors_in_blocks[block_index][i]);
             }
         }
-        return result;
+
+        std::bitset<8> binary;
+        for (int n : result) {
+            binary = n;
+            binary_message.append(binary.to_string());
+        }
+        binary_message.append("0000000");
+        std::cout << "message length = " << binary_message.size() << std::endl;
+        return binary_message;
     }
 
 } //namespace QR

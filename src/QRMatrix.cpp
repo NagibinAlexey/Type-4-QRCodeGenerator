@@ -1,7 +1,7 @@
 #include "QRMatrix.h"
 
 namespace QR {
-    QRMatrix::QRMatrix(const std::string& binary_data, int module_size) : binary_data_(binary_data), module_size_(module_size){
+    QRMatrix::QRMatrix(const std::string& binary_data, int module_size) : binary_data_(binary_data), module_size_(module_size) {
         std::vector<std::vector<QR::Module>> matrix(modules_per_side_, std::vector<QR::Module>(modules_per_side_));
         matrix_ = (std::move(matrix));
         addFinderPatterns();
@@ -9,6 +9,16 @@ namespace QR {
         addAlignmentPatterns();
         addTimingPatterns();
         addDarkModule();
+        reserveFormatInfoArea();
+        int temp = 0;
+        for (auto v : matrix_) {
+            for (auto e : v) {
+                if (!e.function_pattern) ++temp;
+            }
+        }
+        std::cout << "cells for data = " << temp << std::endl;
+
+        placeDataBits();
     };
 
     void QRMatrix::addFinderPattern(std::pair<int, int> top_left_index) {
@@ -85,8 +95,64 @@ namespace QR {
         }
     }
 
-    void addDarkModule() {
+    void QRMatrix::addDarkModule() {
+        matrix_[modules_per_side_ - 8][8].function_pattern = true;
+    }
 
+    void QRMatrix::reserveFormatInfoArea() {
+        for (int row = 0; row < 9; ++row) {
+            matrix_[row][8].function_pattern = true;
+        }
+        for (int row = modules_per_side_ - 7; row < modules_per_side_; ++row) {
+            matrix_[row][8].function_pattern = true;
+        }
+        for (int col = 0; col < 8; ++col) {
+            matrix_[8][col].function_pattern = true;
+        }
+        for (int col = modules_per_side_ - 8; col < modules_per_side_; ++col) {
+            matrix_[8][col].function_pattern = true;
+        }
+    }
+
+    void QRMatrix::upwardPlacement(int& col, int& data_index) {
+        for (int row = modules_per_side_ - 1; row >= 0; --row) {
+            if (!matrix_[row][col].function_pattern) {
+                matrix_[row][col].value = !(binary_data_[data_index] - '0');
+                ++data_index;
+            }
+            if (!matrix_[row][col - 1].function_pattern) {
+                matrix_[row][col - 1].value = !(binary_data_[data_index]- '0');
+                ++data_index;
+            }
+        }
+        col -= 2;
+    }
+
+    void QRMatrix::downwardPlacement(int& col, int& data_index) {
+        for (int row = 0; row <= modules_per_side_ - 1; ++row) {
+            if (!matrix_[row][col].function_pattern) {
+                matrix_[row][col].value = !(binary_data_[data_index] - '0');
+                ++data_index;
+            }
+            if (!matrix_[row][col - 1].function_pattern) {
+                matrix_[row][col - 1].value = !(binary_data_[data_index] - '0');
+                ++data_index;
+            }
+        }
+        col -= 2;
+    }
+
+    void QRMatrix::placeDataBits() {
+        int data_index = 0;
+        int col = modules_per_side_ - 1;
+        while (col > 6) {
+            upwardPlacement(col, data_index);
+            downwardPlacement(col, data_index);
+        }
+        --col;
+        downwardPlacement(col, data_index);
+        upwardPlacement(col, data_index);
+        downwardPlacement(col, data_index);
     }
 
     void QRMatrix::print() const {

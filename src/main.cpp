@@ -11,12 +11,12 @@ int main(int argc, char** argv) {
         QR::ECCGenerator eccGenerator(generator.getFullBitString(), QR::ErrorCorLevel::L);
         eccGenerator.print();
         std::cout << std::endl;
-        std::vector<int> fm = eccGenerator.generateFinalMessage();
-        for (auto number : fm) {
-            std::cout << number << " ";
+        std::string fm = eccGenerator.generateFinalMessage();
+        for (auto c : fm) {
+            std::cout << c;
         }
         std::cout << std::endl;
-        QR::QRMatrix matrix("sdfggsd",10);
+        QR::QRMatrix matrix(fm,10);
         matrix.print();
     } else {
         std::string filename = argv[1];

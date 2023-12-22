@@ -13,7 +13,7 @@ namespace QR {
 
     private:
         const std::string& binary_data_;
-        int modules_per_side_ = 21; //33
+        int modules_per_side_ = 33; //33
         int module_size_;
         std::vector<std::vector<QR::Module>> matrix_;
 
@@ -23,6 +23,10 @@ namespace QR {
         void addAlignmentPatterns();
         void addTimingPatterns();
         void addDarkModule();
+        void reserveFormatInfoArea();
+        void placeDataBits();
+        void upwardPlacement(int& col, int& data_index);
+        void downwardPlacement(int& col, int& data_index);
     };
 } //namespace QR
 

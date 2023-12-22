@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <bitset>
 
 namespace QR {
     class ECCGenerator {
@@ -11,7 +12,7 @@ namespace QR {
         virtual ~ECCGenerator() = default;
 
         std::vector<int> calcErrCorCodewords(std::vector<int> mp_in_block);
-        std::vector<int> generateFinalMessage();
+        std::string generateFinalMessage();
 
 
         void print() {
