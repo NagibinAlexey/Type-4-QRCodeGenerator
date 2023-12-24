@@ -156,13 +156,12 @@ namespace QR {
     }
 
     void QRMatrix::print() const {
-        for (const auto& row : matrix_) {
-            for (const auto& module : row) {
+        for (const auto &row: matrix_) {
+            for (const auto &module: row) {
                 std::cout << module.value + module.function_pattern * 2 << "  ";
             }
             std::cout << std::endl;
         }
     }
-
 } //namespace QR
 
