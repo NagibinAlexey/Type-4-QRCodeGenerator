@@ -1,7 +1,7 @@
 #include "QRMatrix.h"
 
 namespace QR {
-    QRMatrix::QRMatrix(const std::string& binary_data, int module_size) : binary_data_(binary_data), module_size_(module_size) {
+    QRMatrix::QRMatrix(const std::string& binary_data, int modules_per_side) : binary_data_(binary_data), modules_per_side_(modules_per_side) {
         std::vector<std::vector<QR::Module>> matrix(modules_per_side_, std::vector<QR::Module>(modules_per_side_));
         matrix_ = (std::move(matrix));
         addFinderPatterns();
@@ -10,6 +10,7 @@ namespace QR {
         addTimingPatterns();
         addDarkModule();
         reserveFormatInfoArea();
+        addFormatString();
         int temp = 0;
         for (auto v : matrix_) {
             for (auto e : v) {
@@ -19,6 +20,7 @@ namespace QR {
         std::cout << "cells for data = " << temp << std::endl;
 
         placeDataBits();
+        applyMaskPattern();
     };
 
     void QRMatrix::addFinderPattern(std::pair<int, int> top_left_index) {
@@ -114,6 +116,27 @@ namespace QR {
         }
     }
 
+    void QRMatrix::addFormatString() {
+        QR::FormatStringGenerator fsg(corLevel_);
+        std::string fs = fsg.getFormatString();
+
+        for (int row = modules_per_side_ - 1, i = 0; row > modules_per_side_ - 8; --row, ++i) {
+            matrix_[row][8].value = fs[i] - '0';
+        }
+        for (int col = modules_per_side_ - 8, i = 7; col < modules_per_side_; ++col, ++i) {
+            matrix_[8][col].value = fs[i] - '0';
+        }
+        for (int col = 0; col < 6; ++col) {
+            matrix_[8][col].value = fs[col] - '0';
+        }
+        matrix_[8][7].value = fs[6] - '0';
+        matrix_[8][8].value = fs[7] - '0';
+        matrix_[7][8].value = fs[8] - '0';
+        for (int row = 5, i = 9; row >= 0; --row, ++i) {
+            matrix_[row][8].value = fs[i] - '0';
+        }
+    }
+
     void QRMatrix::upwardPlacement(int& col, int& data_index) {
         for (int row = modules_per_side_ - 1; row >= 0; --row) {
             if (!matrix_[row][col].function_pattern) {
@@ -153,6 +176,18 @@ namespace QR {
         downwardPlacement(col, data_index);
         upwardPlacement(col, data_index);
         downwardPlacement(col, data_index);
+    }
+
+    void QRMatrix::applyMaskPattern(int maskNumber) {
+        for (int row = 0; row < matrix_.size(); ++row) {
+            if (row % 2 == 0) {
+                for (int col = 0; col < matrix_[0].size(); ++col) {
+                    if (!matrix_[row][col].function_pattern) {
+                        matrix_[row][col].value = !matrix_[row][col].value;
+                    }
+                }
+            }
+        }
     }
 
     void QRMatrix::print() const {
