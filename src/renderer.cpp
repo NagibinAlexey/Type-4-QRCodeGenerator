@@ -54,21 +54,27 @@ namespace QR {
 
     void renderer::renderQRCode(const char* filename, int quality) {
         int modules_count = matrix_.getModulesCount();
-        auto image = new unsigned char[3 * modules_count * modules_count * module_size_];
+        int qr_full_size = 3 * (modules_count + 0) * (modules_count + 0) * module_size_ * module_size_;
+        auto image = new unsigned char[qr_full_size];
+        for (int i = 0; i < qr_full_size; ++i) {
+            image[i] = 255;
+        }
 
         auto matrix_data = matrix_.getMatrixData();
         int counter = 0;
         for (const auto& row : matrix_data) {
-            for (const auto& module : row) {
-                for (int i = 0; i < module_size_ * 3; ++i) {
-                    image[counter] = static_cast<int>(module.value) * 255;
-                    ++counter;
+            for (int module_size_row = 0; module_size_row < module_size_; ++module_size_row) {
+                for (const auto &module: row) {
+                    for (int comp = 0; comp < 3 * module_size_; ++comp) {
+                        image[counter] = static_cast<int>(module.value) * 255;
+                        ++counter;
+                    }
                 }
             }
         }
 
         std::cout << "test8" << std::endl;
-        createJPEG(filename, image, modules_count * module_size_ , modules_count * module_size_ , quality);
+        createJPEG(filename, image, (modules_count + 0) * module_size_ , (modules_count + 0)* module_size_ , quality);
         delete[] image;
     }
 
