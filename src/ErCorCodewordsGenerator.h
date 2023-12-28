@@ -6,14 +6,13 @@
 #include <bitset>
 
 namespace QR {
-    class ECCGenerator {
+    class ECCGenerator final {
     public:
         explicit ECCGenerator(const std::string& fullBitString, ErrorCorLevel corLevel);
-        virtual ~ECCGenerator() = default;
+        ~ECCGenerator() = default;
 
         std::vector<int> calcErrCorCodewords(std::vector<int> mp_in_block);
         std::string generateFinalMessage();
-
 
         void print() {
             for (const auto coef : mp) {

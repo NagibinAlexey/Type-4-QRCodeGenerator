@@ -54,28 +54,36 @@ namespace QR {
 
     void renderer::renderQRCode(const char* filename, int quality) {
         int modules_count = matrix_.getModulesCount();
-        int qr_full_size = 3 * (modules_count + 0) * (modules_count + 0) * module_size_ * module_size_;
-        auto image = new unsigned char[qr_full_size];
+        auto color_matrix = matrixToColorArray();
+
+        std::cout << "test8" << std::endl;
+        createJPEG(filename, color_matrix, (modules_count + 8) * module_size_ , (modules_count + 8) * module_size_ , quality);
+    }
+
+    unsigned char* renderer::matrixToColorArray() {
+        int modules_count = matrix_.getModulesCount();
+        int qr_full_size = 3 * (modules_count + 8) * (modules_count + 8) * module_size_ * module_size_; //with quiet zone: a 4-module-wide area of light modules.
+        auto color_matrix = new unsigned char[qr_full_size];
         for (int i = 0; i < qr_full_size; ++i) {
-            image[i] = 255;
+            color_matrix[i] = 255;
         }
+        int start_data = 3 * module_size_ * (modules_count + 8) * 4 + 3 * module_size_ * 4;
 
         auto matrix_data = matrix_.getMatrixData();
         int counter = 0;
-        for (const auto& row : matrix_data) {
+
+        for (int row = 0; row < matrix_data.size(); ++row) {
             for (int module_size_row = 0; module_size_row < module_size_; ++module_size_row) {
-                for (const auto &module: row) {
+                for (int col = 0; col < matrix_data[0].size(); ++col) {
                     for (int comp = 0; comp < 3 * module_size_; ++comp) {
-                        image[counter] = static_cast<int>(module.value) * 255;
+                        color_matrix[start_data + counter] = static_cast<int>(matrix_data[row][col].value) * 255;
                         ++counter;
                     }
                 }
+                counter += 3 * module_size_ * 8;
             }
         }
-
-        std::cout << "test8" << std::endl;
-        createJPEG(filename, image, (modules_count + 0) * module_size_ , (modules_count + 0)* module_size_ , quality);
-        delete[] image;
+        return color_matrix;
     }
 
 } // QR

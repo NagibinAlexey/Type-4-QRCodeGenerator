@@ -1,9 +1,10 @@
 #pragma once
 #include <cstddef>
-#include <wchar.h>
+#include <cwchar>
 #include <jpeglib.h>
 #include <string>
 #include <iostream>
+#include <vector>
 #include "QRMatrix.h"
 
 namespace QR {
@@ -16,6 +17,7 @@ namespace QR {
     private:
         const QRMatrix& matrix_;
         int module_size_;
+        unsigned char* matrixToColorArray();
         static void createJPEG(const char *filename, unsigned char *image, int width, int height, int quality);
     };
 

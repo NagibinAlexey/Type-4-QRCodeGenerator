@@ -6,10 +6,10 @@
 #include <vector>
 
 namespace QR {
-    class QRMatrix {
+    class QRMatrix final {
     public:
         explicit QRMatrix(const std::string& binary_data, int modules_per_side = 33);
-        virtual ~QRMatrix() = default;
+        ~QRMatrix() = default;
         void print() const;
         int getModulesCount() const { return modules_per_side_; };
         std::vector<std::vector<QR::Module>> getMatrixData() const { return matrix_; };
