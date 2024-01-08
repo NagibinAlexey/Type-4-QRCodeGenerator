@@ -3,7 +3,7 @@
 
 namespace QR {
 
-    ECCGenerator::ECCGenerator(const std::string& fullBitString, ErrorCorLevel corLevel) {
+    ECCGenerator::ECCGenerator(const std::string& fullBitString, int version, ErrorCorLevel corLevel) {
         err_cor_info = QR::utility::calcInfo(corLevel);
         gp = QR::utility::findGen(corLevel);
         for (int i = 0; i < fullBitString.size() - 1; i += 8) {

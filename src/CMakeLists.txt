@@ -1,4 +1,4 @@
-add_executable(ccQRCodeGenerator main.cpp
+add_library(sut STATIC
         QRGenerator.cpp
         QRGenerator.h
         domain.h
@@ -11,7 +11,14 @@ add_executable(ccQRCodeGenerator main.cpp
         renderer.cpp
         renderer.h
         FormatStringGenerator.cpp
-        FormatStringGenerator.h)
+        FormatStringGenerator.h
+        start_program.cpp
+        alphanumericConverter.h
+        numericConverter.h)
+target_include_directories(sut PUBLIC .)
+
+add_executable(ccQRCodeGenerator main.cpp)
+#target_link_libraries(ccQRCodeGenerator PRIVATE sut)
 
 set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/extern/libjpeg-cmake)
 find_package(JPEG REQUIRED)
@@ -20,5 +27,5 @@ if (NOT JPEG_FOUND)
 endif ()
 if (JPEG_FOUND)
     include_directories(${JPEG_INCLUDE_DIR})
-    target_link_libraries(ccQRCodeGenerator ${JPEG_LIBRARIES})
+    target_link_libraries(ccQRCodeGenerator PRIVATE sut ${JPEG_LIBRARIES})
 endif ()

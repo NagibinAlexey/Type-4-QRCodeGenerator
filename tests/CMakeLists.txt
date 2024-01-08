@@ -8,7 +8,11 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(unit_tests
-        analyzer_test.cpp)
-target_link_libraries(unit_tests PRIVATE gtest_main)
+        QRGenerator_test.cpp
+        analyzer_test.cpp
+        alphanumeric_test.cpp
+        ErCorGenerator_test.cpp
+        numeric_test.cpp)
+target_link_libraries(unit_tests PRIVATE sut gtest_main)
 include(GoogleTest)
 gtest_discover_tests(unit_tests)

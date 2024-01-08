@@ -67,7 +67,7 @@ namespace QR {
         for (int i = 0; i < qr_full_size; ++i) {
             color_matrix[i] = 255;
         }
-        int start_data = 3 * module_size_ * (modules_count + 8) * 4 + 3 * module_size_ * 4;
+        int start_data = 3 * module_size_ * module_size_ * (modules_count + 8) * 4 + 3 * module_size_ * 4;
 
         auto matrix_data = matrix_.getMatrixData();
         int counter = 0;

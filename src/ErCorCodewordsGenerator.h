@@ -8,7 +8,7 @@
 namespace QR {
     class ECCGenerator final {
     public:
-        explicit ECCGenerator(const std::string& fullBitString, ErrorCorLevel corLevel);
+        explicit ECCGenerator(const std::string& fullBitString, int version, ErrorCorLevel corLevel);
         ~ECCGenerator() = default;
 
         std::vector<int> calcErrCorCodewords(std::vector<int> mp_in_block);
@@ -19,6 +19,7 @@ namespace QR {
                 std::cout << coef << " ";
             }
         }
+        void setGp(std::vector<int> gp_) { gp = std::move(gp_); };
 
     private:
         ErrorCorInfo err_cor_info;
@@ -57,6 +58,7 @@ namespace QR {
                 case H:
                     return generator_polynomial16;
             }
+            return std::vector<int>{};
         }
     }
 } //namespace QR

@@ -4,7 +4,6 @@ enable_testing()
 
 add_subdirectory(src bin)
 add_subdirectory(tests)
-set(CMAKE_INSTALL_DOCDIR "docs")
 
 execute_process(
         COMMAND ${GIT_EXECUTABLE} clone
