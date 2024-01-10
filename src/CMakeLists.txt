@@ -14,11 +14,17 @@ add_library(sut STATIC
         FormatStringGenerator.h
         start_program.cpp
         alphanumericConverter.h
-        numericConverter.h)
+        numericConverter.h
+        polynomialGenerator.h
+)
 target_include_directories(sut PUBLIC .)
 
 add_executable(ccQRCodeGenerator main.cpp)
 #target_link_libraries(ccQRCodeGenerator PRIVATE sut)
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG)
+endif ()
 
 set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/extern/libjpeg-cmake)
 find_package(JPEG REQUIRED)

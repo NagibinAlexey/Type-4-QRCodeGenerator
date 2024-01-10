@@ -1,11 +1,11 @@
 #include "ErCorCodewordsGenerator.h"
-#include "GF256.h"
 
 namespace QR {
 
     ECCGenerator::ECCGenerator(const std::string& fullBitString, int version, ErrorCorLevel corLevel) {
-        err_cor_info = QR::utility::calcInfo(corLevel);
-        gp = QR::utility::findGen(corLevel);
+        err_cor_info = QR::utility::calcInfo(version, corLevel);
+        //gp = QR::utility::findGen(version, corLevel);
+        gp = QR::generatePolynomial(err_cor_info.ecc_per_block_);
         for (int i = 0; i < fullBitString.size() - 1; i += 8) {
             mp.push_back(std::stoi(fullBitString.substr(i, 8), nullptr, 2));
         }

@@ -2,33 +2,11 @@
 #include "analyzer.h"
 #include "alphanumericConverter.h"
 #include "numericConverter.h"
-#define DEBUG
 
 namespace QR {
     void QRGenerator::print() {
-        std::cout << "Mode - " << mode_ << std::endl;
-        std::cout << data_ << std::endl;
-        std::cout << "Capacity = " << capacity_ << std::endl;
         std::cout << generateBinaryData() << std::endl;
         std::cout << generateFullBitString() << std::endl;
-    }
-
-    QRGenerator::QRGenerator(std::ifstream &stream, int version, ErrorCorLevel level) : data_((std::istreambuf_iterator<char>(stream)),
-                                                                std::istreambuf_iterator<char>()), corLevel(level) {
-        mode_ = QR::analyze(data_);
-        try {
-            minimum_version_ = QR::getMinQRCodeVersion(data_, level, mode_);
-        }
-        catch (const std::out_of_range& e) {}
-
-#ifdef DEBUG
-       std::cout << "QRCode minimum version = " <<  minimum_version_ << std::endl;
-#endif
-        if (version < minimum_version_) {
-            throw std::out_of_range("This QRCode version is too small");
-        }
-        version_ = version;
-        capacity_ = getCapacity();
     }
 
     QRGenerator::QRGenerator(std::string string, int version, ErrorCorLevel level) : data_(std::move(string)), corLevel(level) {
@@ -47,6 +25,12 @@ namespace QR {
         }
         version_ = version;
         capacity_ = getCapacity();
+
+#ifdef DEBUG
+        std::cout << "String to encode = " << data_ << std::endl;
+        std::cout << "Mode - " << QR::ModeMap[mode_] << std::endl;
+        std::cout << "Capacity = " << capacity_ << std::endl;
+#endif
     }
 
     std::string QRGenerator::generateFullBitString() {

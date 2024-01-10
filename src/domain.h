@@ -10,6 +10,8 @@ namespace QR {
         Kanji
     };
 
+    static std::string ModeMap[] = { "Numeric", "Alphanumeric","Byte", "Kanji" };
+
     enum ErrorCorLevel {
         L,                 //Recovers 7% of data
         M,                 //Recovers 15% of data

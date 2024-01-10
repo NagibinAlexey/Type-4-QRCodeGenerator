@@ -8,8 +8,7 @@
 namespace QR {
     class QRGenerator {
     public:
-        explicit QRGenerator(std::ifstream& stream, int version = 4, ErrorCorLevel level = H);
-        explicit QRGenerator(std::string string, int version = 4, ErrorCorLevel level = H);
+        explicit QRGenerator(std::string string, int version = 4, ErrorCorLevel level = L);
         virtual ~QRGenerator() = default;
         void print();
         [[nodiscard]] int getQRCodeVersion() const;
