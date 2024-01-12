@@ -14,14 +14,16 @@ namespace QR {
         [[nodiscard]] int getQRCodeVersion() const;
         std::string getFullBitString();
         void setCapacity(int capacity);
+        [[nodiscard]] QRGeneratorInfo getQRInfo() const;
 
     private:
+        QRGeneratorInfo info_{};
         std::string data_;
-        Mode mode_;
-        ErrorCorLevel corLevel;
+        //Mode mode_;
+        //ErrorCorLevel corLevel;
         int capacity_;
-        int version_;
-        int minimum_version_;
+        //int version_;
+        //int minimum_version_;
 
         std::string generateFullBitString();
 

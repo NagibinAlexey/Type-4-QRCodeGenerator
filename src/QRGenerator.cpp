@@ -9,26 +9,29 @@ namespace QR {
         std::cout << generateFullBitString() << std::endl;
     }
 
-    QRGenerator::QRGenerator(std::string string, int version, ErrorCorLevel level) : data_(std::move(string)), corLevel(level) {
-        mode_ = QR::analyze(data_);
+    QRGenerator::QRGenerator(std::string string, int version, ErrorCorLevel level) : data_(std::move(string)) {
+        info_.mode = QR::analyze(data_);
+        info_.corLevel = level;
         try {
-            minimum_version_ = QR::getMinQRCodeVersion(data_, level, mode_);
+            info_.minimum_version = QR::getMinQRCodeVersion(data_, info_.corLevel, info_.mode);
         }
-        catch (const std::out_of_range& e) {}
+        catch (const std::out_of_range& e) {
+            //TODO: exit
+        }
 
 #ifdef DEBUG
-        std::cout << "QRCode minimum version = " <<  minimum_version_ << std::endl;
+        std::cout << "QRCode minimum version = " <<  info_.minimum_version << std::endl;
 #endif
 
-        if (version < minimum_version_) {
+        if (version < info_.minimum_version) {
             throw std::out_of_range("This QRCode version is too small");
         }
-        version_ = version;
+        info_.version = version;
         capacity_ = getCapacity();
 
 #ifdef DEBUG
         std::cout << "String to encode = " << data_ << std::endl;
-        std::cout << "Mode - " << QR::ModeMap[mode_] << std::endl;
+        std::cout << "Mode - " << QR::ModeMap[info_.mode] << std::endl;
         std::cout << "Capacity = " << capacity_ << std::endl;
 #endif
     }
@@ -40,7 +43,7 @@ namespace QR {
         int char_count = static_cast<int>(data_.size());
 
         std::string mode_indicator;
-        switch (mode_) {
+        switch (info_.mode) {
             case Numeric :
                 mode_indicator = "0001";
                 mode_indicator.append(std::bitset<10>(char_count).to_string());
@@ -84,10 +87,10 @@ namespace QR {
     }
 
     std::string QRGenerator::generateBinaryData() {
-        if (mode_ == QR::Numeric) {
+        if (info_.mode == QR::Numeric) {
             return numericToBitString(data_);
         }
-        else if (mode_ == QR::Alphanumeric) {
+        else if (info_.mode == QR::Alphanumeric) {
             return alphanumericToBitString(data_);
         }
         return alphanumericToBitString(data_);
@@ -98,32 +101,36 @@ namespace QR {
     }
 
     int QRGenerator::getCapacity() {
-        switch (corLevel) {
+        switch (info_.corLevel) {
             case L:
-                if (version_ == 1) return 19 * 8;
-                else if (version_ == 2) return 34 * 8;
-                else if (version_ == 3) return 55 * 8;
+                if (info_.version == 1) return 19 * 8;
+                else if (info_.version == 2) return 34 * 8;
+                else if (info_.version == 3) return 55 * 8;
                 else return 80 * 8;
             case M:
-                if (version_ == 1) return 16 * 8;
-                else if (version_ == 2) return 28 * 8;
-                else if (version_ == 3) return 44 * 8;
+                if (info_.version == 1) return 16 * 8;
+                else if (info_.version == 2) return 28 * 8;
+                else if (info_.version == 3) return 44 * 8;
                 else return 64 * 8;
             case Q:
-                if (version_ == 1) return 13 * 8;
-                else if (version_ == 2) return 22 * 8;
-                else if (version_ == 3) return 34 * 8;
+                if (info_.version == 1) return 13 * 8;
+                else if (info_.version == 2) return 22 * 8;
+                else if (info_.version == 3) return 34 * 8;
                 else return 48 * 8;
             case H:
-                if (version_ == 1) return 9 * 8;
-                else if (version_ == 2) return 16 * 8;
-                else if (version_ == 3) return 26 * 8;
+                if (info_.version == 1) return 9 * 8;
+                else if (info_.version == 2) return 16 * 8;
+                else if (info_.version == 3) return 26 * 8;
                 else return 36 * 8;
         }
     }
 
     int QRGenerator::getQRCodeVersion() const {
-        return version_;
+        return info_.version;
+    }
+
+    QRGeneratorInfo QRGenerator::getQRInfo() const {
+        return info_;
     }
 
     std::string QRGenerator::getFullBitString() {

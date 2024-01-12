@@ -2,10 +2,10 @@
 
 namespace QR {
 
-    ECCGenerator::ECCGenerator(const std::string& fullBitString, int version, ErrorCorLevel corLevel) {
-        err_cor_info = QR::utility::calcInfo(version, corLevel);
-        //gp = QR::utility::findGen(version, corLevel);
+    ECCGenerator::ECCGenerator(QRGenerator& qrGenerator) {
+        err_cor_info = utility::calcInfo(qrGenerator.getQRInfo().version, qrGenerator.getQRInfo().corLevel);
         gp = QR::generatePolynomial(err_cor_info.ecc_per_block_);
+        std::string fullBitString = qrGenerator.getFullBitString();
         for (int i = 0; i < fullBitString.size() - 1; i += 8) {
             mp.push_back(std::stoi(fullBitString.substr(i, 8), nullptr, 2));
         }
@@ -16,7 +16,7 @@ namespace QR {
         std::vector<int> prev_step_gp;
 
         int multiplier = GF256::intToLog[mp_in_block[0]];
-        for (auto& coef : current_gp) {
+        for (int& coef : current_gp) {
             coef = GF256::logToInt[(GF256::intToLog[coef] + multiplier) % 255];
         }
         while (current_gp.size() != mp_in_block.size()) {
@@ -33,7 +33,7 @@ namespace QR {
             current_gp = gp;
 
             multiplier = GF256::intToLog[prev_step_gp[0]];
-            for (auto &coef: current_gp) {
+            for (int& coef: current_gp) {
                 coef = GF256::logToInt[(GF256::intToLog[coef] + multiplier) % 255];
             }
             while (current_gp.size() <= prev_step_gp.size()) {
@@ -58,8 +58,9 @@ namespace QR {
         int block_size = static_cast<int>(mp.size()) / blocks_count;
         for (int block_index = 0; block_index < blocks_count; ++block_index) {
             std::vector<int> mp_in_block(mp.begin() + block_index * block_size, mp.begin() + block_index * block_size + block_size);
-            errors_in_blocks.push_back(calcErrCorCodewords(mp_in_block));
-            messages_in_blocks.push_back(std::move(mp_in_block));
+            std::vector<int> errors = calcErrCorCodewords(mp_in_block);
+            errors_in_blocks.push_back(errors);
+            messages_in_blocks.push_back(mp_in_block);
         }
 
         for (int i = 0; i < messages_in_blocks[0].size(); ++i) {

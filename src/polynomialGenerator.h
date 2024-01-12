@@ -42,21 +42,12 @@ namespace QR {
             std::vector<int> first_polynomial = current_polynomial;
             std::vector<int> second_polynomial{0,j};
             current_polynomial = multiplyPolynomials(first_polynomial, second_polynomial);
-            /*for (auto e : current_polynomial) {
-                std::cout << e << " ";
-            }
-            std::cout << std::endl;*/
         }
 
         // convert from Exponent to Integers
         for (int& value : current_polynomial) {
             value = GF256::logToInt[value];
         }
-
-        for (auto e : current_polynomial) {
-            std::cout << e << " ";
-        }
-        std::cout << std::endl;
 
         return current_polynomial;
     }
