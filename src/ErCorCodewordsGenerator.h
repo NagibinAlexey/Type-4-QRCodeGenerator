@@ -23,6 +23,7 @@ namespace QR {
         ErrorCorInfo err_cor_info;
         std::vector<int> gp;
         std::vector<int> mp;
+        int remainderBits = 7;
     };
 
     namespace utility {

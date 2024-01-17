@@ -1,7 +1,9 @@
 #include "QRMatrix.h"
+#include "penalty_calculation.cpp"
 
 namespace QR {
-    QRMatrix::QRMatrix(const std::string& binary_data, int modules_per_side) : binary_data_(binary_data), modules_per_side_(modules_per_side) {
+    QRMatrix::QRMatrix(QRGenerator& qrGenerator, const std::string& binary_data) : binary_data_(binary_data) {
+        modules_per_side_ = utility::getMatrixSize(qrGenerator.getQRInfo().version);
         std::vector<std::vector<QR::Module>> matrix(modules_per_side_, std::vector<QR::Module>(modules_per_side_));
         matrix_ = (std::move(matrix));
         addFinderPatterns();
@@ -20,7 +22,9 @@ namespace QR {
         std::cout << "cells for data = " << temp << std::endl;
 
         placeDataBits();
-        applyMaskPattern();
+
+        int optimal_mask_pattern = findOptimalMask(matrix_);
+        applyMaskPattern(matrix_,optimal_mask_pattern);
     };
 
     void QRMatrix::addFinderPattern(std::pair<int, int> top_left_index) {
@@ -178,16 +182,100 @@ namespace QR {
         downwardPlacement(col, data_index);
     }
 
-    void QRMatrix::applyMaskPattern(int maskNumber) {
-        for (int row = 0; row < matrix_.size(); ++row) {
-            if (row % 2 == 0) {
-                for (int col = 0; col < matrix_[0].size(); ++col) {
-                    if (!matrix_[row][col].function_pattern) {
-                        matrix_[row][col].value = !matrix_[row][col].value;
+    void QRMatrix::applyMaskPattern(std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
+        if (maskNumber == 0) {
+            for (int row = 0; row < matrix.size(); ++row) {
+                for (int col = 0; col < matrix[0].size(); ++col) {
+                    if (!matrix[row][col].function_pattern && (row + col) % 2 == 0) {
+                        matrix[row][col].value = !matrix[row][col].value;
                     }
                 }
             }
         }
+        else if (maskNumber == 1) {
+            for (int row = 0; row < matrix.size(); ++row) {
+                if (row % 2 == 0) {
+                    for (int col = 0; col < matrix[0].size(); ++col) {
+                        if (!matrix[row][col].function_pattern) {
+                            matrix[row][col].value = !matrix[row][col].value;
+                        }
+                    }
+                }
+            }
+        }
+        else if (maskNumber == 2) {
+            for (auto & row : matrix) {
+                for (int col = 0; col < matrix[0].size(); ++col) {
+                    if (!row[col].function_pattern && col % 3 == 0) {
+                        row[col].value = !row[col].value;
+                    }
+                }
+            }
+        }
+        else if (maskNumber == 3) {
+            for (int row = 0; row < matrix.size(); ++row) {
+                for (int col = 0; col < matrix[0].size(); ++col) {
+                    if (!matrix[row][col].function_pattern && (row + col) % 3 == 0) {
+                        matrix[row][col].value = !matrix[row][col].value;
+                    }
+                }
+            }
+        }
+        else if (maskNumber == 4) {
+            for (int row = 0; row < matrix.size(); ++row) {
+                for (int col = 0; col < matrix[0].size(); ++col) {
+                    if (!matrix[row][col].function_pattern && static_cast<int>(std::floor(row / 2) + std::floor(col / 3)) % 2 == 0) {
+                        matrix[row][col].value = !matrix[row][col].value;
+                    }
+                }
+            }
+        }
+        else if (maskNumber == 5) {
+            for (int row = 0; row < matrix.size(); ++row) {
+                for (int col = 0; col < matrix[0].size(); ++col) {
+                    if (!matrix[row][col].function_pattern && ((row * col) % 2) + ((row * col) % 3) == 0) {
+                        matrix[row][col].value = !matrix[row][col].value;
+                    }
+                }
+            }
+        }
+        else if (maskNumber == 6) {
+            for (int row = 0; row < matrix.size(); ++row) {
+                for (int col = 0; col < matrix[0].size(); ++col) {
+                    if (!matrix[row][col].function_pattern && (((row * col) % 2) + ((row * col) % 3)) % 2 == 0) {
+                        matrix[row][col].value = !matrix[row][col].value;
+                    }
+                }
+            }
+        }
+        else if (maskNumber == 7) {
+            for (int row = 0; row < matrix.size(); ++row) {
+                for (int col = 0; col < matrix[0].size(); ++col) {
+                    if (!matrix[row][col].function_pattern && (((row + col) % 2) + ((row * col) % 3)) % 2 == 0) {
+                        matrix[row][col].value = !matrix[row][col].value;
+                    }
+                }
+            }
+        }
+    }
+
+    int QRMatrix::findOptimalMask(std::vector<std::vector<QR::Module>>& matrix) {
+        std::vector<int> total_penalties(8);
+        for (int mask_pattern = 0; mask_pattern < 8; ++mask_pattern) {
+            std::vector<std::vector<QR::Module>> temp_matrix = matrix;
+            applyMaskPattern(temp_matrix, mask_pattern);
+            total_penalties[mask_pattern] = QR::utility::calculateTotalPenalty(temp_matrix);
+        }
+        int optimal_mask = 0;
+        int min_penalty = total_penalties[0];
+
+        for (int mask_pattern = 1; mask_pattern < 8; ++mask_pattern) {
+            if (total_penalties[mask_pattern] < min_penalty) {
+                min_penalty = total_penalties[mask_pattern];
+                optimal_mask = mask_pattern;
+            }
+        }
+        return optimal_mask;
     }
 
     void QRMatrix::print() const {

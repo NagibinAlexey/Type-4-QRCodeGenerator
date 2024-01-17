@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include "ErCorCodewordsGenerator.h"
 
-QR::QRGenerator gen_("HELLO WORLD", 1,QR::ErrorCorLevel::M);
+QR::QRGenerator gen_1("HELLO WORLD", 1,QR::ErrorCorLevel::M);
 
 class ECCGeneratorTestSuite : public ::testing::Test {
 protected:
-    QR::QRGenerator& generator = gen_;
+    QR::QRGenerator& generator = gen_1;
 };
 
 TEST_F(ECCGeneratorTestSuite, MP) {

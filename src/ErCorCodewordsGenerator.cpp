@@ -9,6 +9,9 @@ namespace QR {
         for (int i = 0; i < fullBitString.size() - 1; i += 8) {
             mp.push_back(std::stoi(fullBitString.substr(i, 8), nullptr, 2));
         }
+        if (qrGenerator.getQRInfo().version == 1) {
+            remainderBits = 0;
+        }
     }
 
     std::vector<int> ECCGenerator::calcErrCorCodewords(std::vector<int> mp_in_block) {
@@ -79,7 +82,8 @@ namespace QR {
             binary = n;
             binary_message.append(binary.to_string());
         }
-        binary_message.append("0000000");
+        std::string remainder_bits(remainderBits, '0');
+        binary_message.append(remainder_bits);
         std::cout << "message length = " << binary_message.size() << std::endl;
         return binary_message;
     }

@@ -13,7 +13,9 @@ add_executable(unit_tests
         alphanumeric_test.cpp
         ErCorGenerator_test.cpp
         numeric_test.cpp
-        polinomialGenerator_test.cpp)
+        polynomialGenerator_test.cpp
+        penalty_test.cpp
+)
 target_link_libraries(unit_tests PRIVATE sut gtest_main)
 include(GoogleTest)
 gtest_discover_tests(unit_tests)

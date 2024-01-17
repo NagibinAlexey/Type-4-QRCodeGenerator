@@ -16,6 +16,7 @@ add_library(sut STATIC
         alphanumericConverter.h
         numericConverter.h
         polynomialGenerator.h
+        penalty_calculation.cpp
 )
 target_include_directories(sut PUBLIC .)
 
