@@ -1,9 +1,33 @@
 #include "domain.h"
 #include <algorithm>
-#include <iostream>
+#include "QRGenerator.h"
+#include "FormatStringGenerator.h"
 
 namespace QR {
     namespace utility {
+
+        void addFormatString(QRGenerator& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
+            QR::FormatStringGenerator fsg(qrGenerator.getQRInfo().corLevel, maskNumber);
+            std::string fs = fsg.getFormatString();
+            int modules_per_side = utility::getMatrixSize(qrGenerator.getQRInfo().version);
+
+            for (int row = modules_per_side - 1, i = 0; row > modules_per_side - 8; --row, ++i) {
+                matrix[row][8].value = fs[i] - '0';
+            }
+            for (int col = modules_per_side - 8, i = 7; col < modules_per_side; ++col, ++i) {
+                matrix[8][col].value = fs[i] - '0';
+            }
+            for (int col = 0; col < 6; ++col) {
+                matrix[8][col].value = fs[col] - '0';
+            }
+            matrix[8][7].value = fs[6] - '0';
+            matrix[8][8].value = fs[7] - '0';
+            matrix[7][8].value = fs[8] - '0';
+            for (int row = 5, i = 9; row >= 0; --row, ++i) {
+                matrix[row][8].value = fs[i] - '0';
+            }
+        }
+
         int horizontalPenalty1(std::vector<std::vector<QR::Module>>& matrix) {
             int penalty = 0;
             for (auto& row : matrix) {
@@ -118,7 +142,8 @@ namespace QR {
             return penalty;
         }
 
-        int calculateTotalPenalty(std::vector<std::vector<QR::Module>>& matrix) {
+        int calculateTotalPenalty(QRGenerator& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
+            addFormatString(qrGenerator, matrix, maskNumber);
             return calculatePenalty1(matrix) + calculatePenalty2(matrix) + calculatePenalty3(matrix) +
                     calculatePenalty4(matrix);
         }

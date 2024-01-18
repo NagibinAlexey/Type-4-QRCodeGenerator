@@ -9,10 +9,10 @@
 #include <bitset>
 
 namespace QR {
-    class ECCGenerator final {
+    class ECCGenerator {
     public:
         explicit ECCGenerator(QRGenerator& qrGenerator);
-        ~ECCGenerator() = default;
+        virtual ~ECCGenerator() = default;
 
         std::vector<int> calcErrCorCodewords(std::vector<int> mp_in_block);
         std::string generateFinalMessage();

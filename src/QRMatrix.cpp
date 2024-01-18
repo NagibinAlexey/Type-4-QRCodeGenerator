@@ -2,29 +2,23 @@
 #include "penalty_calculation.cpp"
 
 namespace QR {
-    QRMatrix::QRMatrix(QRGenerator& qrGenerator, const std::string& binary_data) : binary_data_(binary_data) {
+    QRMatrix::QRMatrix(QRGenerator& qrGenerator, const std::string& binary_data) : qrGenerator_(qrGenerator), binary_data_(binary_data) {
         modules_per_side_ = utility::getMatrixSize(qrGenerator.getQRInfo().version);
         std::vector<std::vector<QR::Module>> matrix(modules_per_side_, std::vector<QR::Module>(modules_per_side_));
         matrix_ = (std::move(matrix));
         addFinderPatterns();
         addSeparators();
-        addAlignmentPatterns();
+        if (qrGenerator.getQRInfo().version != 1) {
+            addAlignmentPatterns();
+        }
         addTimingPatterns();
         addDarkModule();
         reserveFormatInfoArea();
-        addFormatString();
-        int temp = 0;
-        for (auto v : matrix_) {
-            for (auto e : v) {
-                if (!e.function_pattern) ++temp;
-            }
-        }
-        std::cout << "cells for data = " << temp << std::endl;
-
         placeDataBits();
 
         int optimal_mask_pattern = findOptimalMask(matrix_);
         applyMaskPattern(matrix_,optimal_mask_pattern);
+        addFormatString(qrGenerator, matrix_,optimal_mask_pattern);
     };
 
     void QRMatrix::addFinderPattern(std::pair<int, int> top_left_index) {
@@ -120,24 +114,25 @@ namespace QR {
         }
     }
 
-    void QRMatrix::addFormatString() {
-        QR::FormatStringGenerator fsg(corLevel_);
+    void QRMatrix::addFormatString(QRGenerator& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
+        QR::FormatStringGenerator fsg(qrGenerator.getQRInfo().corLevel, maskNumber);
         std::string fs = fsg.getFormatString();
+        int modules_per_side = utility::getMatrixSize(qrGenerator.getQRInfo().version);
 
-        for (int row = modules_per_side_ - 1, i = 0; row > modules_per_side_ - 8; --row, ++i) {
-            matrix_[row][8].value = fs[i] - '0';
+        for (int row = modules_per_side - 1, i = 0; row > modules_per_side - 8; --row, ++i) {
+            matrix[row][8].value = fs[i] - '0';
         }
-        for (int col = modules_per_side_ - 8, i = 7; col < modules_per_side_; ++col, ++i) {
-            matrix_[8][col].value = fs[i] - '0';
+        for (int col = modules_per_side - 8, i = 7; col < modules_per_side; ++col, ++i) {
+            matrix[8][col].value = fs[i] - '0';
         }
         for (int col = 0; col < 6; ++col) {
-            matrix_[8][col].value = fs[col] - '0';
+            matrix[8][col].value = fs[col] - '0';
         }
-        matrix_[8][7].value = fs[6] - '0';
-        matrix_[8][8].value = fs[7] - '0';
-        matrix_[7][8].value = fs[8] - '0';
+        matrix[8][7].value = fs[6] - '0';
+        matrix[8][8].value = fs[7] - '0';
+        matrix[7][8].value = fs[8] - '0';
         for (int row = 5, i = 9; row >= 0; --row, ++i) {
-            matrix_[row][8].value = fs[i] - '0';
+            matrix[row][8].value = fs[i] - '0';
         }
     }
 
@@ -156,7 +151,7 @@ namespace QR {
     }
 
     void QRMatrix::downwardPlacement(int& col, int& data_index) {
-        for (int row = 0; row <= modules_per_side_ - 1; ++row) {
+        for (int row = 0; row < modules_per_side_; ++row) {
             if (!matrix_[row][col].function_pattern) {
                 matrix_[row][col].value = !(binary_data_[data_index] - '0');
                 ++data_index;
@@ -174,7 +169,9 @@ namespace QR {
         int col = modules_per_side_ - 1;
         while (col > 6) {
             upwardPlacement(col, data_index);
-            downwardPlacement(col, data_index);
+            if (col > 6) {
+                downwardPlacement(col, data_index);
+            }
         }
         --col;
         downwardPlacement(col, data_index);
@@ -264,7 +261,7 @@ namespace QR {
         for (int mask_pattern = 0; mask_pattern < 8; ++mask_pattern) {
             std::vector<std::vector<QR::Module>> temp_matrix = matrix;
             applyMaskPattern(temp_matrix, mask_pattern);
-            total_penalties[mask_pattern] = QR::utility::calculateTotalPenalty(temp_matrix);
+            total_penalties[mask_pattern] = QR::utility::calculateTotalPenalty(qrGenerator_, temp_matrix, mask_pattern);
         }
         int optimal_mask = 0;
         int min_penalty = total_penalties[0];

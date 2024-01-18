@@ -19,8 +19,8 @@ namespace QR {
         std::vector<int> prev_step_gp;
 
         int multiplier = GF256::intToLog[mp_in_block[0]];
-        for (int& coef : current_gp) {
-            coef = GF256::logToInt[(GF256::intToLog[coef] + multiplier) % 255];
+        for (int& coefficient : current_gp) {
+            coefficient = GF256::logToInt[(GF256::intToLog[coefficient] + multiplier) % 255];
         }
         while (current_gp.size() != mp_in_block.size()) {
             current_gp.push_back(0);
@@ -30,21 +30,23 @@ namespace QR {
         }
         current_gp.erase(current_gp.begin());
 
-        int counter = static_cast<int>(mp_in_block.size() - 1);
+        size_t counter = mp_in_block.size() - 1;
         while (counter != 0) {
             prev_step_gp = current_gp;
             current_gp = gp;
 
             multiplier = GF256::intToLog[prev_step_gp[0]];
-            for (int& coef: current_gp) {
-                coef = GF256::logToInt[(GF256::intToLog[coef] + multiplier) % 255];
+            for (int& coefficient : current_gp) {
+                coefficient = GF256::logToInt[(GF256::intToLog[coefficient] + multiplier) % 255];
             }
             while (current_gp.size() <= prev_step_gp.size()) {
                 current_gp.push_back(0);
             }
-            for (int i = 0; i < current_gp.size(); ++i) {
+            for (int i = 0; i < current_gp.size() - 1; ++i) {
                 current_gp[i] = prev_step_gp[i] ^ current_gp[i];
             }
+            current_gp[current_gp.size() - 1] = 0 ^ current_gp[current_gp.size() - 1];
+
             current_gp.erase(current_gp.begin());
             --counter;
         }
@@ -84,7 +86,6 @@ namespace QR {
         }
         std::string remainder_bits(remainderBits, '0');
         binary_message.append(remainder_bits);
-        std::cout << "message length = " << binary_message.size() << std::endl;
         return binary_message;
     }
 

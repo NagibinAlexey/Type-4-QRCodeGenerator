@@ -38,4 +38,13 @@ namespace QR {
         int minimum_version;
     };
 
+    namespace utility {
+        inline int getMatrixSize(int version) {
+            if (version == 1) return 21;
+            else if (version == 2) return 25;
+            else if (version == 3) return 29;
+            return 33;
+        }
+    }
+
 } //namespace QR

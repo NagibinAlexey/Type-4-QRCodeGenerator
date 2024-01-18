@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "ErCorCodewordsGenerator.h"
+#include <iostream>
 
 QR::QRGenerator gen_1("HELLO WORLD", 1,QR::ErrorCorLevel::M);
 

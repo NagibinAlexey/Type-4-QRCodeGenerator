@@ -27,7 +27,7 @@ namespace QR {
             throw std::out_of_range("This QRCode version is too small");
         }
         info_.version = version;
-        capacity_ = getCapacity();
+        capacity_ = calculateCapacity();
 
 #ifdef DEBUG
         std::cout << "String to encode = " << data_ << std::endl;
@@ -96,11 +96,7 @@ namespace QR {
         return alphanumericToBitString(data_);
     }
 
-    void QRGenerator::setCapacity(int capacity) {
-        capacity_ = capacity;
-    }
-
-    int QRGenerator::getCapacity() {
+    int QRGenerator::calculateCapacity() {
         switch (info_.corLevel) {
             case L:
                 if (info_.version == 1) return 19 * 8;
@@ -123,10 +119,6 @@ namespace QR {
                 else if (info_.version == 3) return 26 * 8;
                 else return 36 * 8;
         }
-    }
-
-    int QRGenerator::getQRCodeVersion() const {
-        return info_.version;
     }
 
     QRGeneratorInfo QRGenerator::getQRInfo() const {

@@ -11,23 +11,17 @@ namespace QR {
         explicit QRGenerator(std::string string, int version = 4, ErrorCorLevel level = L);
         virtual ~QRGenerator() = default;
         void print();
-        [[nodiscard]] int getQRCodeVersion() const;
         std::string getFullBitString();
-        void setCapacity(int capacity);
         [[nodiscard]] QRGeneratorInfo getQRInfo() const;
 
     private:
         QRGeneratorInfo info_{};
         std::string data_;
-        //Mode mode_;
-        //ErrorCorLevel corLevel;
         int capacity_;
-        //int version_;
-        //int minimum_version_;
 
         std::string generateFullBitString();
 
         std::string generateBinaryData();
-        int getCapacity();
+        int calculateCapacity();
     };
 } //namespace QR

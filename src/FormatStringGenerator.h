@@ -5,10 +5,10 @@
 #include <iostream>
 
 namespace QR{
-    class FormatStringGenerator final {
+    class FormatStringGenerator {
     public:
-        explicit FormatStringGenerator(ErrorCorLevel corLevel, int maskNumber = 1);
-        ~FormatStringGenerator() = default;
+        explicit FormatStringGenerator(ErrorCorLevel corLevel, int maskNumber);
+        virtual ~FormatStringGenerator() = default;
         std::string getFormatString() { return format_string_; }
 
     private:
