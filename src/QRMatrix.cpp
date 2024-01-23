@@ -15,19 +15,11 @@ namespace QR {
         addDarkModule();
         reserveFormatInfoArea();
 
-        int temp = 0;
-        for (const auto& row : matrix_) {
-            for (const auto& e : row) {
-                if (!e.function_pattern) ++temp;
-            }
-        }
-        std::cout << temp;
-
         placeDataBits();
 
         int optimal_mask_pattern = findOptimalMask(matrix_);
-        //applyMaskPattern(matrix_,optimal_mask_pattern);
-        //addFormatString(qrGenerator, matrix_,optimal_mask_pattern);
+        applyMaskPattern(matrix_,optimal_mask_pattern);
+        addFormatString(qrGenerator, matrix_,optimal_mask_pattern);
     };
 
     void QRMatrix::addFinderPattern(std::pair<int, int> top_left_index) {
