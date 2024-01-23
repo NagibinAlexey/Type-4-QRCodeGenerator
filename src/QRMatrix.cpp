@@ -14,11 +14,20 @@ namespace QR {
         addTimingPatterns();
         addDarkModule();
         reserveFormatInfoArea();
+
+        int temp = 0;
+        for (const auto& row : matrix_) {
+            for (const auto& e : row) {
+                if (!e.function_pattern) ++temp;
+            }
+        }
+        std::cout << temp;
+
         placeDataBits();
 
         int optimal_mask_pattern = findOptimalMask(matrix_);
-        applyMaskPattern(matrix_,optimal_mask_pattern);
-        addFormatString(qrGenerator, matrix_,optimal_mask_pattern);
+        //applyMaskPattern(matrix_,optimal_mask_pattern);
+        //addFormatString(qrGenerator, matrix_,optimal_mask_pattern);
     };
 
     void QRMatrix::addFinderPattern(std::pair<int, int> top_left_index) {
@@ -120,19 +129,19 @@ namespace QR {
         int modules_per_side = utility::getMatrixSize(qrGenerator.getQRInfo().version);
 
         for (int row = modules_per_side - 1, i = 0; row > modules_per_side - 8; --row, ++i) {
-            matrix[row][8].value = fs[i] - '0';
+            matrix[row][8].value = !(fs[i] - '0');
         }
         for (int col = modules_per_side - 8, i = 7; col < modules_per_side; ++col, ++i) {
-            matrix[8][col].value = fs[i] - '0';
+            matrix[8][col].value = !(fs[i] - '0');
         }
         for (int col = 0; col < 6; ++col) {
-            matrix[8][col].value = fs[col] - '0';
+            matrix[8][col].value = !(fs[col] - '0');
         }
-        matrix[8][7].value = fs[6] - '0';
-        matrix[8][8].value = fs[7] - '0';
-        matrix[7][8].value = fs[8] - '0';
+        matrix[8][7].value = !(fs[6] - '0');
+        matrix[8][8].value = !(fs[7] - '0');
+        matrix[7][8].value = !(fs[8] - '0');
         for (int row = 5, i = 9; row >= 0; --row, ++i) {
-            matrix[row][8].value = fs[i] - '0';
+            matrix[row][8].value = !(fs[i] - '0');
         }
     }
 

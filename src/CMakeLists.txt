@@ -27,7 +27,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DDEBUG)
 endif ()
 
-set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/extern/libjpeg-cmake)
+#set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/extern/libjpeg-cmake)
 find_package(JPEG REQUIRED)
 if (NOT JPEG_FOUND)
     message(FATAL_ERROR, " Libjpeg library not found, please install: sudo apt-get install libjpeg-dev")

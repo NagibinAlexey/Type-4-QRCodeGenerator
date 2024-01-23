@@ -6,14 +6,13 @@
 
 int start_program() {
 
-    QR::QRGenerator generator("HELLO WORLD", 1,QR::ErrorCorLevel::M);
+    QR::QRGenerator generator("HELLO WORLD", 1,QR::ErrorCorLevel::L); //ABCDEFG KLMNOP RSTQWERTY
     QR::ECCGenerator eccGenerator(generator);
     std::string fm = eccGenerator.generateFinalMessage();
     QR::QRMatrix matrix(generator, fm);
-    matrix.print();
 
     QR::renderer renderer(matrix);
-    //renderer.renderQRCode("QRCode.jpg", 90);
+    renderer.renderQRCode("QRCode.jpg", 90);
 
     return 0;
 }

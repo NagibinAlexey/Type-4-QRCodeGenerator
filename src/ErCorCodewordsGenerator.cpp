@@ -22,7 +22,7 @@ namespace QR {
         for (int& coefficient : current_gp) {
             coefficient = GF256::logToInt[(GF256::intToLog[coefficient] + multiplier) % 255];
         }
-        while (current_gp.size() != mp_in_block.size()) {
+        while (current_gp.size() < mp_in_block.size()) {
             current_gp.push_back(0);
         }
         for (int i = 0; i < current_gp.size(); ++i) {
