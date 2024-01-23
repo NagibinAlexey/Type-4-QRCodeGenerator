@@ -6,7 +6,7 @@
 
 int start_program() {
 
-    QR::QRGenerator generator("HELLO WORLD", 1,QR::ErrorCorLevel::L);
+    QR::QRGenerator generator("HELLO WORLD", 1,QR::ErrorCorLevel::M);
     QR::ECCGenerator eccGenerator(generator);
     std::string fm = eccGenerator.generateFinalMessage();
     QR::QRMatrix matrix(generator, fm);

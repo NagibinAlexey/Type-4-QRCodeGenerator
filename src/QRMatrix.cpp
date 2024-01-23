@@ -266,12 +266,18 @@ namespace QR {
         int optimal_mask = 0;
         int min_penalty = total_penalties[0];
 
-        for (int mask_pattern = 1; mask_pattern < 8; ++mask_pattern) {
+        for (int mask_pattern = 0; mask_pattern < 8; ++mask_pattern) {
+#ifdef DEBUG
+            std::cout << "Mask pattern = " << mask_pattern << " penalties = " << total_penalties[mask_pattern] << std::endl;
+#endif
             if (total_penalties[mask_pattern] < min_penalty) {
                 min_penalty = total_penalties[mask_pattern];
                 optimal_mask = mask_pattern;
             }
         }
+#ifdef DEBUG
+        std::cout << "Optimal mask pattern = " << optimal_mask << " penalties = " << total_penalties[optimal_mask] << std::endl;
+#endif
         return optimal_mask;
     }
 
