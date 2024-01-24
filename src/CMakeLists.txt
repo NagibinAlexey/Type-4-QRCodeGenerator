@@ -1,6 +1,6 @@
 add_library(sut STATIC
-        QRGenerator.cpp
-        QRGenerator.h
+        stringConverter.cpp
+        stringConverter.h
         domain.h
         analyzer.h
         ErCorCodewordsGenerator.cpp
@@ -17,6 +17,9 @@ add_library(sut STATIC
         numericConverter.h
         polynomialGenerator.h
         penalty_calculation.cpp
+        byteConverter.h
+        QRGenerator.cpp
+        QRGenerator.h
 )
 target_include_directories(sut PUBLIC .)
 

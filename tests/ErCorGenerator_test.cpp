@@ -2,11 +2,11 @@
 #include "ErCorCodewordsGenerator.h"
 #include <iostream>
 
-QR::QRGenerator gen_1("HELLO WORLD", 1,QR::ErrorCorLevel::M);
+QR::stringConverter gen_1("HELLO WORLD", 1, QR::ErrorCorLevel::M);
 
 class ECCGeneratorTestSuite : public ::testing::Test {
 protected:
-    QR::QRGenerator& generator = gen_1;
+    QR::stringConverter& generator = gen_1;
 };
 
 TEST_F(ECCGeneratorTestSuite, MP) {

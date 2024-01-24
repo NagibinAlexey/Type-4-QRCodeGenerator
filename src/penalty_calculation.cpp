@@ -1,12 +1,12 @@
 #include "domain.h"
 #include <algorithm>
-#include "QRGenerator.h"
+#include "stringConverter.h"
 #include "FormatStringGenerator.h"
 
 namespace QR {
     namespace utility {
 
-        void addFormatString(QRGenerator& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
+        void addFormatString(stringConverter& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
             QR::FormatStringGenerator fsg(qrGenerator.getQRInfo().corLevel, maskNumber);
             std::string fs = fsg.getFormatString();
             int modules_per_side = utility::getMatrixSize(qrGenerator.getQRInfo().version);
@@ -142,7 +142,7 @@ namespace QR {
             return penalty;
         }
 
-        int calculateTotalPenalty(QRGenerator& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
+        int calculateTotalPenalty(stringConverter& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
             addFormatString(qrGenerator, matrix, maskNumber);
             return calculatePenalty1(matrix) + calculatePenalty2(matrix) + calculatePenalty3(matrix) +
                     calculatePenalty4(matrix);

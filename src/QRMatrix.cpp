@@ -2,7 +2,7 @@
 #include "penalty_calculation.cpp"
 
 namespace QR {
-    QRMatrix::QRMatrix(QRGenerator& qrGenerator, const std::string& binary_data) : qrGenerator_(qrGenerator), binary_data_(binary_data) {
+    QRMatrix::QRMatrix(stringConverter& qrGenerator, const std::string& binary_data) : qrGenerator_(qrGenerator), binary_data_(binary_data) {
         modules_per_side_ = utility::getMatrixSize(qrGenerator.getQRInfo().version);
         std::vector<std::vector<QR::Module>> matrix(modules_per_side_, std::vector<QR::Module>(modules_per_side_));
         matrix_ = (std::move(matrix));
@@ -115,7 +115,7 @@ namespace QR {
         }
     }
 
-    void QRMatrix::addFormatString(QRGenerator& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
+    void QRMatrix::addFormatString(stringConverter& qrGenerator, std::vector<std::vector<QR::Module>>& matrix, int maskNumber) {
         QR::FormatStringGenerator fsg(qrGenerator.getQRInfo().corLevel, maskNumber);
         std::string fs = fsg.getFormatString();
         int modules_per_side = utility::getMatrixSize(qrGenerator.getQRInfo().version);

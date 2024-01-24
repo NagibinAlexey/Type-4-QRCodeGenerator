@@ -2,7 +2,7 @@
 
 namespace QR {
 
-    ECCGenerator::ECCGenerator(QRGenerator& qrGenerator) {
+    ECCGenerator::ECCGenerator(stringConverter& qrGenerator) {
         err_cor_info = utility::calcInfo(qrGenerator.getQRInfo().version, qrGenerator.getQRInfo().corLevel);
         gp = QR::generatePolynomial(err_cor_info.ecc_per_block_);
         std::string fullBitString = qrGenerator.getFullBitString();

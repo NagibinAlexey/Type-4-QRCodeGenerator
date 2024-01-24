@@ -44,6 +44,7 @@ namespace QR {
         auto color_matrix = matrixToColorArray();
 
         createJPEG(filename, color_matrix, (modules_count + 8) * module_size_ , (modules_count + 8) * module_size_ , quality);
+        delete[] color_matrix;
     }
 
     unsigned char* renderer::matrixToColorArray() {

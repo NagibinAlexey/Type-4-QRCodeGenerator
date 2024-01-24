@@ -1,27 +1,12 @@
 #pragma once
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <bitset>
-#include "domain.h"
+
+#include "stringConverter.h"
+#include "ErCorCodewordsGenerator.h"
+#include "QRMatrix.h"
+#include "renderer.h"
 
 namespace QR {
-    class QRGenerator {
-    public:
-        explicit QRGenerator(std::string string, int version = 4, ErrorCorLevel level = L);
-        virtual ~QRGenerator() = default;
-        void print();
-        std::string getFullBitString();
-        [[nodiscard]] QRGeneratorInfo getQRInfo() const;
 
-    private:
-        QRGeneratorInfo info_{};
-        std::string data_;
-        int capacity_;
+    void generate(std::string& string, int version, ErrorCorLevel level);
 
-        std::string generateFullBitString();
-
-        std::string generateBinaryData();
-        int calculateCapacity();
-    };
-} //namespace QR
+} // QR

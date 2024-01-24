@@ -2,7 +2,7 @@
 
 #include "domain.h"
 #include "polynomialGenerator.h"
-#include "QRGenerator.h"
+#include "stringConverter.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -11,7 +11,7 @@
 namespace QR {
     class ECCGenerator {
     public:
-        explicit ECCGenerator(QRGenerator& qrGenerator);
+        explicit ECCGenerator(stringConverter& qrGenerator);
         virtual ~ECCGenerator() = default;
 
         std::vector<int> calcErrCorCodewords(std::vector<int> mp_in_block);
