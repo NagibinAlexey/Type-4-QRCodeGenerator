@@ -21,6 +21,7 @@ add_library(sut STATIC
         QRGenerator.cpp
         QRGenerator.h
 )
+#include_directories(${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/include)
 target_include_directories(sut PUBLIC .)
 
 add_executable(ccQRCodeGenerator main.cpp)
@@ -29,12 +30,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DDEBUG)
 endif ()
 
-#set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/extern/libjpeg-turbo/cmakescripts)
-#find_package(TURBOJPEG REQUIRED)
-#if (NOT TURBOJPEG_FOUND)
-#    message(FATAL_ERROR, " Libjpeg library not found, please install: sudo apt-get install libjpeg-dev")
-#endif ()
-#if (TURBOJPEG_FOUND)
-#    include_directories(${TURBOJPEG_INCLUDE_DIR})
-    target_link_libraries(ccQRCodeGenerator PRIVATE sut jpeg)
-#endif ()
+find_package(JPEG REQUIRED)
+if (NOT JPEG_FOUND)
+    message(FATAL_ERROR, " Libjpeg library not found, please install: sudo apt-get install libjpeg-dev")
+endif()
+if (JPEG_FOUND)
+    include_directories(${JPEG_INCLUDE_DIR})
+    target_link_libraries(ccQRCodeGenerator PRIVATE sut ${JPEG_LIBRARIES})
+endif()
