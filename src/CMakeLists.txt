@@ -35,8 +35,8 @@ if (WIN32)
 endif (WIN32)
 
 if (UNIX)
-    set(JPEG_INC ${CMAKE_BINARY_DIR}/vcpkg_installed/linux/include)
-    set(JPEG_LIB ${CMAKE_BINARY_DIR}/vcpkg_installed/linux/lib/jpeg.a)
+    set(JPEG_INC ${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux/include)
+    set(JPEG_LIB ${CMAKE_BINARY_DIR}/vcpkg_installed/x64-linux/lib/libjpeg.a)
 endif (UNIX)
 
 include_directories(${JPEG_INC})
